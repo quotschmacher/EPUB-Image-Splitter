@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  epub-imgsplit:
+    # Baut das Runtime-Image aus ./docker/Dockerfile
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: epub-imgsplit
+    # ENTRYPOINT ist bereits im Dockerfile gesetzt:
+    # ["python", "/app/epub_split_images.py", "--input", "/in", "--output", "/out"]
+    # → Wenn du zusätzliche Flags willst, ergänze sie hier unter 'command'.
+    # command: ["--min-width", "2", "--min-height", "2"]
+    volumes:
+      - ./in:/in
+      - ./out:/out
+    restart: unless-stopped
+
+  # Beispiel: nur Bildseiten (keine Textseiten)
+  epub-imgsplit-images-only:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: epub-imgsplit-images-only
+    command: ["--images-only"]
+    volumes:
+      - ./in:/in
+      - ./out:/out
+    restart: "no"
+
+  # Beispiel: Filter strenger setzen (z.B. PNG-Spacer <3x3 verwerfen)
+  epub-imgsplit-strict-filter:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: epub-imgsplit-strict-filter
+    command: ["--min-width", "3", "--min-height", "3"]
+    volumes:
+      - ./in:/in
+      - ./out:/out
+    restart: "no"
